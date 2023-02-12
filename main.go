@@ -39,8 +39,10 @@ func _scrobble(api *lastfm.Api, file string) error {
 	v := *sl
 	batchNo := 0
 	totalScrobbles := 0
+	totalIgnored := 0
 	for _k := 0; _k <= len(v); _k++ {
 		acceptedScrobbles := 0
+		ignored := 0
 		a := lastfm.P{}
 		batchNo++
 		artists := []string{}
@@ -72,8 +74,14 @@ func _scrobble(api *lastfm.Api, file string) error {
 				acceptedScrobbles += val
 				totalScrobbles += acceptedScrobbles
 			}
+			if val, _err := strconv.Atoi(result.Ignored); _err != nil {
+				return _err
+			} else {
+				ignored += val
+				totalIgnored += ignored
+			}
 		}
-		fmt.Printf("\r Batch %d (contains %d entries). Out of which %d were accepted. Total Accepted: %d", batchNo, len(artists), acceptedScrobbles, totalScrobbles)
+		fmt.Printf("\r Batch %d (contains %d entries). Out of which %d were accepted and %d were ignored. Total Accepted: %d Total Ignored: %d", batchNo, len(artists), acceptedScrobbles, ignored, totalScrobbles, totalIgnored)
 	}
 	return nil
 }
