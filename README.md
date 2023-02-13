@@ -20,7 +20,7 @@ cd /tmp && git clone https://github.com/aditya-K2/lastfm-bulk-scrobbler-cli && c
 ## Usage
 
 ```sh
-$ lastfm-bulk-scrobbler file1.json file2.json file3.json
+$ last-fm-bulk-scrobbler file1.json file2.json file3.json
 ```
 
 ## Format for JSON file.
