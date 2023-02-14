@@ -1,12 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
 	"time"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/shkh/lastfm-go/lastfm"
 )
 
@@ -15,13 +15,13 @@ var (
 	key      = os.Getenv("LASTFM_KEY")
 	username = os.Getenv("LASTFM_USERNAME")
 	password = os.Getenv("LASTFM_PASSWORD")
+	schema   = "normal"
 )
 
 type scrobble struct {
-	ArtistName string    `json:"artistName"`
-	AlbumName  string    `json:"albumName"`
-	TrackName  string    `json:"trackName"`
-	Time       time.Time `json:"time"`
+	ArtistName string `normal:"artistName" spotify:"master_metadata_album_artist_name"`
+	AlbumName  string `normal:"albumName"  spotify:"master_metadata_album_album_name"`
+	TrackName  string `normal:"trackName"  spotify:"master_metadata_track_name"`
 }
 
 type scrobbleList []scrobble
@@ -33,13 +33,17 @@ func _scrobble(api *lastfm.Api, file string) error {
 		return err
 	}
 	sl := &scrobbleList{}
-	json.Unmarshal(f, sl)
+	json := jsoniter.Config{TagKey: schema}.Froze()
+	if err := json.Unmarshal(f, sl); err != nil {
+		return err
+	}
 
-	fmt.Printf("%d Songs To be scrobbled.\n", len(*sl))
+	fmt.Printf("Total of %d Songs To be scrobbled.\n", len(*sl))
 	v := *sl
 	batchNo := 0
 	totalScrobbles := 0
 	totalIgnored := 0
+
 	for _k := 0; _k <= len(v); _k++ {
 		acceptedScrobbles := 0
 		ignored := 0
@@ -53,7 +57,6 @@ func _scrobble(api *lastfm.Api, file string) error {
 			if _k == len(*sl) {
 				break
 			}
-			v := *(sl)
 			artists = append(artists, v[_k].ArtistName)
 			albums = append(albums, v[_k].AlbumName)
 			tracks = append(tracks, v[_k].TrackName)
@@ -87,21 +90,30 @@ func _scrobble(api *lastfm.Api, file string) error {
 }
 
 func main() {
-	fmt.Println(key, secret, username, password)
 	api := lastfm.New(key, secret)
 	api.Login(username, password)
+	fmt.Printf("Logged in as %s.\n", username)
 
 	if len(os.Args) == 1 {
 		fmt.Println("No File Provided")
 		os.Exit(-1)
 	}
 
+	files := []string{}
 	for k := range os.Args {
 		if k != 0 {
-			fmt.Printf("Scrobbling From File: %s.\n", os.Args[k])
-			if err := _scrobble(api, os.Args[k]); err != nil {
-				panic(err)
+			if os.Args[k] == "-s" {
+				schema = "spotify"
+			} else {
+				files = append(files, os.Args[k])
 			}
+		}
+	}
+
+	for _, file := range files {
+		fmt.Printf("Scrobbling From File: %s.\n", file)
+		if err := _scrobble(api, file); err != nil {
+			panic(err)
 		}
 	}
 }

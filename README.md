@@ -20,13 +20,13 @@ cd /tmp && git clone https://github.com/aditya-K2/lastfm-bulk-scrobbler-cli && c
 ## Usage
 
 ```sh
-$ last-fm-bulk-scrobbler file1.json file2.json file3.json
+$ last-fm-bulk-scrobbler file1.json file2.json file3.json # uses the normal schema for json file.
+$ last-fm-bulk-scrobbler -s endsong_1.json endsong_2.json # uses the spotify extended history schema for json file.
 ```
 
 ## Format for JSON file.
 
-Following Schema for JSON file is expected. `time` is not required as it will be overridden with the current time.
-
+This is the default schema used if `-s` flag is not specified.
 
 ```json
 [
@@ -34,16 +34,14 @@ Following Schema for JSON file is expected. `time` is not required as it will be
     "artistName": "JPEGMAFIA",
     "albumName": "I Might Vote 4 Donald Trump",
     "trackName": "I Might Vote 4 Donald Trump",
-    "time": "2022-02-19T18:28:00Z"
   },
   {
     "artistName": "JPEGMAFIA",
     "albumName": "I Might Vote 4 Donald Trump",
     "trackName": "I Might Vote 4 Donald Trump",
-    "time": "2022-02-19T18:28:00Z"
   },
 ]
 ```
 ## Spotify Extended History
 
-If you have your `spotify` extended history. You can convert it into the compatible format [here](https://lilnasy.github.io/scribblyscrobbly/). Details of how to use this website are available [here.](https://docs.google.com/document/d/1IhFMol3wZs24uKnh2rbxHpLaxhETcfB8KqzYIkEW_iM/edit#heading=h.vci5eys83lyn) *(Read the Prepping Your Data Section)*
+By default you can directly use your spotify extended history to scrobble to LastFM by specifying the `-s` flag. If you want to clean up your spotify data. Please follow [this](https://docs.google.com/document/d/1IhFMol3wZs24uKnh2rbxHpLaxhETcfB8KqzYIkEW_iM/edit#heading=h.vci5eys83lyn) very helpful guide *(Read the Prepping Your Data Section)*.
