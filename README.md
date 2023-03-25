@@ -49,4 +49,5 @@ By default you can directly use your spotify extended history to scrobble to Las
 
 ## Scrobble Threshold
 
-`ms_played` in case of spotify extended history should be greater than `scrobble_threshold` to be eligible for being scrobbled.
+`ms_played` in case of spotify extended history should be greater than `threshold` to be eligible for being scrobbled.
+`threshold` is only allowed for spotify schema (i.e when -s flag is used), else it is ignored.

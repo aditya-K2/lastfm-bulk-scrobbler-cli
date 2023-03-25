@@ -28,7 +28,7 @@ type scrobble struct {
 
 type scrobbleList []scrobble
 
-func lessThan(l, r int) bool {
+func lt(l, r int) bool {
 	return l < r
 }
 
@@ -64,7 +64,8 @@ func _scrobble(api *lastfm.Api, file string) error {
 			if k == len(*sl) {
 				break
 			}
-			if lessThan(v[k].Milliseconds, threshold) || v[k].ArtistName == "" || v[k].TrackName == "" {
+			if (schema == "spotify" && lt(v[k].Milliseconds, threshold)) ||
+				v[k].ArtistName == "" || v[k].TrackName == "" {
 				k++
 				continue
 			}
