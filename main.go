@@ -11,12 +11,12 @@ import (
 )
 
 var (
-	secret         = os.Getenv("LASTFM_SECRET")
-	key            = os.Getenv("LASTFM_KEY")
-	username       = os.Getenv("LASTFM_USERNAME")
-	password       = os.Getenv("LASTFM_PASSWORD")
-	schema         = "normal"
-	defaultTimeDur = 60 * 4 * 1000
+	secret    = os.Getenv("LASTFM_SECRET")
+	key       = os.Getenv("LASTFM_KEY")
+	username  = os.Getenv("LASTFM_USERNAME")
+	password  = os.Getenv("LASTFM_PASSWORD")
+	schema    = "normal"
+	threshold = 60 * 4 * 1000
 )
 
 type scrobble struct {
@@ -64,7 +64,7 @@ func _scrobble(api *lastfm.Api, file string) error {
 			if k == len(*sl) {
 				break
 			}
-			if !lessThan(v[k].Milliseconds, defaultTimeDur) || v[k].ArtistName == "" || v[k].TrackName == "" {
+			if !lessThan(v[k].Milliseconds, threshold) || v[k].ArtistName == "" || v[k].TrackName == "" {
 				k++
 				continue
 			}
@@ -123,7 +123,7 @@ func main() {
 					fmt.Printf("There was an error parsing the default scrobble threshold. You Provided %s", os.Args[k])
 					panic(err)
 				}
-				defaultTimeDur = int(_t)
+				threshold = int(_t)
 			} else {
 				files = append(files, os.Args[k])
 			}
