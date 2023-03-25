@@ -11,20 +11,26 @@ import (
 )
 
 var (
-	secret   = os.Getenv("LASTFM_SECRET")
-	key      = os.Getenv("LASTFM_KEY")
-	username = os.Getenv("LASTFM_USERNAME")
-	password = os.Getenv("LASTFM_PASSWORD")
-	schema   = "normal"
+	secret         = os.Getenv("LASTFM_SECRET")
+	key            = os.Getenv("LASTFM_KEY")
+	username       = os.Getenv("LASTFM_USERNAME")
+	password       = os.Getenv("LASTFM_PASSWORD")
+	schema         = "normal"
+	defaultTimeDur = 60 * 4 * 1000
 )
 
 type scrobble struct {
-	ArtistName string `normal:"artistName" spotify:"master_metadata_album_artist_name"`
-	AlbumName  string `normal:"albumName"  spotify:"master_metadata_album_album_name"`
-	TrackName  string `normal:"trackName"  spotify:"master_metadata_track_name"`
+	ArtistName   string `normal:"artistName"   spotify:"master_metadata_album_artist_name"`
+	AlbumName    string `normal:"albumName"    spotify:"master_metadata_album_album_name"`
+	TrackName    string `normal:"trackName"    spotify:"master_metadata_track_name"`
+	Milliseconds int    `normal:"milliseconds" spotify:"ms_played"`
 }
 
 type scrobbleList []scrobble
+
+func lessThan(l, r int) bool {
+	return l >= r
+}
 
 func _scrobble(api *lastfm.Api, file string) error {
 	var f []byte
@@ -53,15 +59,21 @@ func _scrobble(api *lastfm.Api, file string) error {
 		albums := []string{}
 		tracks := []string{}
 		timestamps := []string{}
-		for _i := 0; _i < 50; _i++ {
+		count := 0
+		for count < 50 {
 			if _k == len(*sl) {
 				break
+			}
+			if !lessThan(v[_k].Milliseconds, defaultTimeDur) || v[_k].ArtistName == "" || v[_k].TrackName == "" {
+				_k++
+				continue
 			}
 			artists = append(artists, v[_k].ArtistName)
 			albums = append(albums, v[_k].AlbumName)
 			tracks = append(tracks, v[_k].TrackName)
 			timestamps = append(timestamps, time.Now().String())
 			_k++
+			count++
 		}
 		a["artist"] = artists
 		a["album"] = albums
@@ -104,6 +116,14 @@ func main() {
 		if k != 0 {
 			if os.Args[k] == "-s" {
 				schema = "spotify"
+			} else if os.Args[k] == "-t" {
+				k++
+				_t, err := strconv.ParseInt(os.Args[k], 10, 64)
+				if err != nil {
+					fmt.Printf("There was an error parsing the default scrobble threshold. You Provided %s", os.Args[k])
+					panic(err)
+				}
+				defaultTimeDur = int(_t)
 			} else {
 				files = append(files, os.Args[k])
 			}
