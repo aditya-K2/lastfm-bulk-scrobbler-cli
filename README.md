@@ -22,6 +22,7 @@ cd /tmp && git clone https://github.com/aditya-K2/lastfm-bulk-scrobbler-cli && c
 ```sh
 $ last-fm-bulk-scrobbler file1.json file2.json file3.json # uses the normal schema for json file.
 $ last-fm-bulk-scrobbler -s endsong_1.json endsong_2.json # uses the spotify extended history schema for json file.
+$ last-fm-bulk-scrobbler -s endsong_1.json endsong_2.json -t 180000 # uses the spotify extended history schema for json file with scrobble threshold of 180000 milliseconds (3 minutes)
 ```
 
 ## Format for JSON file.
@@ -45,3 +46,7 @@ This is the default schema used if `-s` flag is not specified.
 ## Spotify Extended History
 
 By default you can directly use your spotify extended history to scrobble to LastFM by specifying the `-s` flag. If you want to clean up your spotify data. Please follow [this](https://docs.google.com/document/d/1IhFMol3wZs24uKnh2rbxHpLaxhETcfB8KqzYIkEW_iM/edit#heading=h.vci5eys83lyn) very helpful guide *(Read the Prepping Your Data Section)*.
+
+## Scrobble Threshold
+
+`ms_played` in case of spotify extended history should be greater than `scrobble_threshold` to be eligible for being scrobbled.
