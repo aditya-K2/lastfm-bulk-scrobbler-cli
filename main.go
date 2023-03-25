@@ -50,7 +50,7 @@ func _scrobble(api *lastfm.Api, file string) error {
 	totalScrobbles := 0
 	totalIgnored := 0
 
-	for _k := 0; _k <= len(v); _k++ {
+	for k := 0; k <= len(v); k++ {
 		acceptedScrobbles := 0
 		ignored := 0
 		a := lastfm.P{}
@@ -61,18 +61,18 @@ func _scrobble(api *lastfm.Api, file string) error {
 		timestamps := []string{}
 		count := 0
 		for count < 50 {
-			if _k == len(*sl) {
+			if k == len(*sl) {
 				break
 			}
-			if !lessThan(v[_k].Milliseconds, defaultTimeDur) || v[_k].ArtistName == "" || v[_k].TrackName == "" {
-				_k++
+			if !lessThan(v[k].Milliseconds, defaultTimeDur) || v[k].ArtistName == "" || v[k].TrackName == "" {
+				k++
 				continue
 			}
-			artists = append(artists, v[_k].ArtistName)
-			albums = append(albums, v[_k].AlbumName)
-			tracks = append(tracks, v[_k].TrackName)
+			artists = append(artists, v[k].ArtistName)
+			albums = append(albums, v[k].AlbumName)
+			tracks = append(tracks, v[k].TrackName)
 			timestamps = append(timestamps, time.Now().String())
-			_k++
+			k++
 			count++
 		}
 		a["artist"] = artists
