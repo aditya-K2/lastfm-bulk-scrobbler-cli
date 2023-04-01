@@ -45,6 +45,7 @@ func _scrobble(api *lastfm.Api, file string) error {
 	}
 
 	fmt.Printf("Total of %d Songs To be scrobbled.\n", len(*sl))
+	fmt.Printf("Threshold set to: %d Milliseconds (Approx. %d Minutes)\n", threshold, threshold/1000/60)
 	v := *sl
 	batchNo := 0
 	totalScrobbles := 0
@@ -113,7 +114,7 @@ func main() {
 	}
 
 	files := []string{}
-	for k := range os.Args {
+	for k := 1; k < len(os.Args); k++ {
 		if k != 0 {
 			if os.Args[k] == "-s" {
 				schema = "spotify"
